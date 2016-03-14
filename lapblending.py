@@ -36,7 +36,7 @@ def pyr_reconstruct(lp_orig):
     while lp:
         shape = lp[-1].shape[0],lp[-1].shape[1]
         R = cv2.pyrUp(R,shape)
-        R += lp.pop()
+        R += lp.pop().astype(np.float32)
 
     # Convert the image into integer format
     R = np.clip(R, 0, 255)

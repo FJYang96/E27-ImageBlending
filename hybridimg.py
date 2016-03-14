@@ -18,8 +18,8 @@ def hipass(orig, sigma):
     return orig.astype(np.float32) - img
 
 # Read in source images
-A = cv2.imread('twizzler.jpg')
-B = cv2.imread('twizzler.jpg')
+A = cv2.imread('apple.jpg')
+B = cv2.imread('orange.jpg')
 
 # Parameters
 Ka = 1
