@@ -10,7 +10,7 @@ from copy import deepcopy
 def pyr_build(img, depth):
     """ This function takes in an image and the desired depth to create
     a laplacian pyramid represented in the form of a list"""
-    G = [img.copy()]       # G is the list representing the gaussian pyramid
+    G = [deepcopy(img)]       # G is the list representing the gaussian pyramid
     lp = []          # lp is the list representing the laplacian pyramid
 
     for i in range(depth-1):
@@ -18,10 +18,11 @@ def pyr_build(img, depth):
         next_G = cv2.pyrDown(G[i])
         G.append(next_G)
         # Then find the laplacian
-        resized_G = cv2.pyrUp(G[i+1], dstsize=(G[i].shape[0], G[i].shape[1]) )
+        resized_G = cv2.pyrUp(G[i+1], dstsize=(G[i].shape[1], G[i].shape[0]))
         float_G = resized_G.astype(np.float32)
         l = G[i] - float_G
         lp.append(l)
+        print "add", i
 
     lp.append( G[depth-1] )
 
