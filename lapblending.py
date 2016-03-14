@@ -79,8 +79,8 @@ def lap_blend(lpA_orig, lpB_orig, alpha):
 # Here starts the main program
 
 # Get the images
-img1 = cv2.imread('twizzler.jpg')
-img2 = cv2.imread('mnm.jpg')
+img1 = cv2.imread('apple.jpg')
+img2 = cv2.imread('orange.jpg')
 shape = img1.shape[0], img1.shape[1] # Assume 2 images have same shape
 
 # Test for building a pyramid
