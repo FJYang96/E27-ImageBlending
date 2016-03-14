@@ -36,7 +36,7 @@ def pyr_reconstruct(lp_orig):
     while lp:
         shape = lp[-1].shape[0],lp[-1].shape[1]
         R = cv2.pyrUp(R,shape)
-        R += lp.pop().astype(np.float32)
+        R += lp.pop().astype(np.uint8)
 
     # Convert the image into integer format
     R = np.clip(R, 0, 255)
@@ -79,8 +79,8 @@ def lap_blend(lpA_orig, lpB_orig, alpha):
 # Here starts the main program
 
 # Get the images
-img1 = cv2.imread('apple.jpg')
-img2 = cv2.imread('orange.jpg')
+img1 = cv2.imread('1.jpg')
+img2 = cv2.imread('2.jpg')
 shape = img1.shape[0], img1.shape[1] # Assume 2 images have same shape
 
 # Test for building a pyramid
