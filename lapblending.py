@@ -17,8 +17,11 @@ def pyr_build(img, depth):
         # First get the next gaussian
         next_G = cv2.pyrDown(G[i])
         G.append(next_G)
+        print next_G.shape
+        print G[i].shape
         # Then find the laplacian
-        resized_G = cv2.pyrUp(G[i+1], dstsize=(G[i].shape[0], G[i].shape[1]) )
+        #resized_G = cv2.pyrUp(G[i+1], dstsize=(G[i].shape[0], G[i].shape[1]) )
+        resized_G = cv2.pyrUp(G[i+1])
         float_G = resized_G.astype(np.float32)
         l = G[i] - float_G
         lp.append(l)
@@ -79,12 +82,12 @@ def lap_blend(lpA_orig, lpB_orig, alpha):
 # Here starts the main program
 
 # Get the images
-img1 = cv2.imread('twizzler.jpg')
-img2 = cv2.imread('mnm.jpg')
+img1 = cv2.imread('wendy.jpg')
+img2 = cv2.imread('burger.jpg')
 shape = img1.shape[0], img1.shape[1] # Assume 2 images have same shape
 
 # Test for building a pyramid
-lp_depth = 4    # The depth of the laplacian pyramid
+lp_depth = 2    # The depth of the laplacian pyramid
 lp1 = pyr_build(img1, lp_depth)
 for L in lp1:
     cv2.imshow('window',0.5 + 0.5*(L / np.abs(L).max() ))
