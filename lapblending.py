@@ -16,16 +16,15 @@ def pyr_build(orig, depth):
 
     for i in range(depth-1):
         # First get the next gaussian
-        next_G = cv2.pyrDown(G[i])
+        next_G = cv2.pyrDown(G[i])   #dtype is uint8       
         G.append(next_G)
         # Then find the laplacian
         resized_G = cv2.pyrUp(G[i+1], dstsize=(G[i].shape[1], G[i].shape[0]) )
         float_G = resized_G.astype(np.float32)
-        l = G[i] - float_G
+        l = G[i].astype(np.float32) - float_G
         lp.append(l)
-        print "add", i
 
-    lp.append( G[depth-1] )
+    lp.append( G[depth-1].astype(np.float32) )
 
     return lp
 
@@ -84,23 +83,28 @@ def lap_blend(lpA_orig, lpB_orig, alpha):
         B = lpB.pop(0)
         # resize alpha mask to be of the same shape as A and B
         shape = A.shape[1], A.shape[0]
-        temp_alpha = cv2.resize(alpha, shape)
+        temp_alpha = cv2.resize(alpha, shape, interpolation=cv2.INTER_AREA)
         new_lp.append( alpha_blend(A, B, temp_alpha) )
 
     # build the blended image from the new laplacian
     return pyr_reconstruct(new_lp)
 
-# Here starts the main program
+##### Main program #####
 
 # Get the images
-img1 = cv2.imread('wendy.jpg')
-#img1 = 0.5 + 0.5 * (img1 / np.abs(img1.max()) )
-img2 = cv2.imread('burger.jpg')
-shape = img1.shape[0], img1.shape[1] # Assume 2 images have same shape
+img1 = cv2.imread('clinton.jpg')
+img2 = cv2.imread('bernie.jpg')
+
+# img1 = cv2.imread('einstein.jpg')
+# img2 = cv2.imread('jobs.jpg')
+
+# Assume 2 images have same shape
+shape = img1.shape[0], img1.shape[1]
 
 # Test for building a pyramid
 lp_depth = 4    # The depth of the laplacian pyramid
 lp1 = pyr_build(img1, lp_depth)
+
 """
 # This would show the pyramid
 for L in lp1:
@@ -109,6 +113,11 @@ for L in lp1:
 """
 lp2 = pyr_build(img2, lp_depth)
 
+"""
+for L in lp2:
+    cv2.imshow('window',0.5 + 0.5*(L / np.abs(L).max() ))
+    while cv2.waitKey() < 0 : pass
+"""
 """
 # Test reconstructing an image from its laplacian
 R1 = pyr_reconstruct(lp1)
@@ -119,16 +128,15 @@ while cv2.waitKey() < 0 : pass
 # Creating a mask
 alpha = np.zeros(shape, np.float32)
 cv2.ellipse(alpha, (512, 384), (150,200), 0, 0, 360, 1, -1)
+# cv2.ellipse(alpha, (150, 200), (100, 150), 0, 0, 360, 1, -1)
 alpha = cv2.GaussianBlur(alpha, (0,0), 5)
 
 # Blending images directly through a alpha blend
 direct_blend = alpha_blend(img1, img2, alpha)
-img1 = img1.astype(np.float32)
-cv2.imshow('window',0.5 + 0.5*(img1) / 255 )
+direct_blend = direct_blend.astype(np.uint8)
+cv2.imshow('window', direct_blend)
 while cv2.waitKey() < 0 : pass
-
-cv2.imshow('window',0.5 + 0.5*(direct_blend / np.abs(direct_blend).max() ))
-while cv2.waitKey() < 0 : pass
+# cv2.imwrite('final.jpg', direct_blend)
 
 # Blending images using laplacian
 l_blend = lap_blend(lp1, lp2, alpha)
