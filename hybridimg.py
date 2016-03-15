@@ -24,8 +24,8 @@ B = cv2.imread('jobs.jpg', 0)
 # Parameters
 Ka = 0.9 
 Kb = 0.2
-sigmaA = 7
-sigmaB = 5
+sigmaA = 8
+sigmaB = 3
 
 # Compute the hybrid image
 loA = lopass(A, sigmaA)
@@ -49,4 +49,4 @@ cv2.imshow('window', hybrid_img)
 while cv2.waitKey() < 0: pass
 
 # Save the image
-cv2.imwrite('Albert_Jobs.jpg', hybrid_img)
+# cv2.imwrite('Albert_Jobs.jpg', hybrid_img)
