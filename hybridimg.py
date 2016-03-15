@@ -10,7 +10,7 @@ def lopass(orig, sigma):
     shape = orig.shape
     img = np.empty(shape, np.float32)
     # Apply a lowpass filter on the image
-    img = cv2.GaussianBlur(img, (0,0), sigmaX = sigma)
+    img = cv2.GaussianBlur(orig, (0,0), sigmaX = sigma)
     return img
 
 def hipass(orig, sigma):
@@ -18,17 +18,28 @@ def hipass(orig, sigma):
     return orig.astype(np.float32) - img
 
 # Read in source images
-A = cv2.imread('apple.jpg')
-B = cv2.imread('orange.jpg')
+A = cv2.imread('einstein.jpg', 0)
+B = cv2.imread('jobs.jpg', 0)
 
 # Parameters
-Ka = 1
-Kb = 1
-sigmaA = 5
+Ka = 0.9 
+Kb = 0.5
+sigmaA = 10
 sigmaB = 5
 
 # Compute the hybrid image
-hybrid_img = Ka * lopass(A, sigmaA) + Kb * hipass(B, sigmaB)
+loA = lopass(A, sigmaA)
+loA = Ka * loA
+cv2.imshow('window', loA / np.abs(loA.max()) )
+while cv2.waitKey() < 0: pass
+
+hiB = hipass(B, sigmaB)
+cv2.imshow('window', hiB / np.abs(hiB.max()) )
+while cv2.waitKey() < 0: pass
+
+hybrid_img = loA + hiB
+cv2.imshow('window', hybrid_img / np.abs(hybrid_img.max()) )
+while cv2.waitKey() < 0: pass
 
 # Convert the image into integer
 hybrid_img = np.clip(hybrid_img, 0, 255)

@@ -38,8 +38,10 @@ def pyr_reconstruct(lp_orig):
         R = cv2.pyrUp(R,dstsize=shape)
         R = R.astype(np.float32)
         R += lp.pop()
+        '''
         cv2.imshow('window',0.5 + 0.5*(R / np.abs(R).max() ))
         while cv2.waitKey() < 0 : pass
+        '''
 
     # Convert the image into integer format
     R = np.clip(R, 0, 255)
