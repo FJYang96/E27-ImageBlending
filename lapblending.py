@@ -7,10 +7,11 @@ import cv2
 import numpy as np
 from copy import deepcopy
 
-def pyr_build(img, depth):
+def pyr_build(orig, depth):
     """ This function takes in an image and the desired depth to create
     a laplacian pyramid represented in the form of a list"""
-    G = [img.copy()]       # G is the list representing the gaussian pyramid
+    img = deepcopy(orig)
+    G = [img]       # G is the list representing the gaussian pyramid
     lp = []          # lp is the list representing the laplacian pyramid
 
     for i in range(depth-1):
@@ -57,6 +58,13 @@ def alpha_blend(A, B, alpha_orig):
     A = A.astype(alpha.dtype)
     B = B.astype(alpha.dtype)
 
+    '''
+    cv2.imshow('window',0.5 + 0.5*(A / np.abs(A).max() ))
+    while cv2.waitKey() < 0 : pass
+    cv2.imshow('window',0.5 + 0.5*(B / np.abs(B).max() ))
+    while cv2.waitKey() < 0 : pass
+    '''
+
     # If RGB, expend alpha to be also three dimensional
     if len(A.shape) == 3:
         alpha = np.expand_dims(alpha, 2)
@@ -79,7 +87,7 @@ def lap_blend(lpA_orig, lpB_orig, alpha):
         new_lp.append( alpha_blend(A, B, temp_alpha) )
 
     # build the blended image from the new laplacian
-    return pyr_reconstruct(new_lp)    
+    return pyr_reconstruct(new_lp)
 
 # Here starts the main program
 
@@ -107,11 +115,17 @@ cv2.imshow('window',R1)
 while cv2.waitKey() < 0 : pass
 """
 
-# Blending images directly through a alpha blend
+# Creating a mask
 alpha = np.zeros(shape, np.float32)
-cv2.ellipse(alpha, (512, 384), (200,300), 0, 0, 360, 1, -1)
+cv2.ellipse(alpha, (512, 384), (150,200), 0, 0, 360, 1, -1)
 alpha = cv2.GaussianBlur(alpha, (0,0), 5)
+
+# Blending images directly through a alpha blend
 direct_blend = alpha_blend(img1, img2, alpha)
+img1 = img1.astype(np.float32)
+cv2.imshow('window',0.5 + 0.5*(img1) / 255 )
+while cv2.waitKey() < 0 : pass
+
 cv2.imshow('window',0.5 + 0.5*(direct_blend / np.abs(direct_blend).max() ))
 while cv2.waitKey() < 0 : pass
 

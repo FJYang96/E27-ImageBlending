@@ -23,8 +23,8 @@ B = cv2.imread('jobs.jpg', 0)
 
 # Parameters
 Ka = 0.9 
-Kb = 0.5
-sigmaA = 10
+Kb = 0.2
+sigmaA = 7
 sigmaB = 5
 
 # Compute the hybrid image
@@ -34,12 +34,11 @@ cv2.imshow('window', loA / np.abs(loA.max()) )
 while cv2.waitKey() < 0: pass
 
 hiB = hipass(B, sigmaB)
+hiB = Kb * hiB
 cv2.imshow('window', hiB / np.abs(hiB.max()) )
 while cv2.waitKey() < 0: pass
 
 hybrid_img = loA + hiB
-cv2.imshow('window', hybrid_img / np.abs(hybrid_img.max()) )
-while cv2.waitKey() < 0: pass
 
 # Convert the image into integer
 hybrid_img = np.clip(hybrid_img, 0, 255)
@@ -48,3 +47,6 @@ hybrid_img = np.uint8(hybrid_img)
 # Show the image
 cv2.imshow('window', hybrid_img)
 while cv2.waitKey() < 0: pass
+
+# Save the image
+cv2.imwrite('Albert_Jobs.jpg', hybrid_img)
