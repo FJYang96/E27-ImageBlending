@@ -92,8 +92,8 @@ def lap_blend(lpA_orig, lpB_orig, alpha):
 ##### Main program #####
 
 # Get the images
-img1 = cv2.imread('clinton.jpg')
-img2 = cv2.imread('bernie.jpg')
+img1 = cv2.imread('wendy.jpg')
+img2 = cv2.imread('burger.jpg')
 
 # img1 = cv2.imread('einstein.jpg')
 # img2 = cv2.imread('jobs.jpg')
@@ -102,7 +102,7 @@ img2 = cv2.imread('bernie.jpg')
 shape = img1.shape[0], img1.shape[1]
 
 # Test for building a pyramid
-lp_depth = 4    # The depth of the laplacian pyramid
+lp_depth = 1    # The depth of the laplacian pyramid
 lp1 = pyr_build(img1, lp_depth)
 
 """
