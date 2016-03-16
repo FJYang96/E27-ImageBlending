@@ -141,7 +141,7 @@ if ifShow:
     masked[balpha] = img2[balpha]
     cv2.imshow('Mask',masked)
     while cv2.waitKey() < 0: pass
-    cv2.imwrite('mask.jpg',masked)
+    cv2.imwrite('mask.jpg',alpha)
 
 # alpha = cv2.GaussianBlur(alpha, (0,0), 5)
 
@@ -182,5 +182,5 @@ lp4 = pyr_build(img4, 5)
 lp5 = pyr_build(img5, 5)
 l_blend = lap_blend(lp4, lp5, alpha)
 cv2.imshow('color', l_blend)
-cv2.imwrite('solid_color.jpg', l_blend)
+cv2.imwrite('dot.jpg', l_blend)
 while cv2.waitKey() < 0 : pass
