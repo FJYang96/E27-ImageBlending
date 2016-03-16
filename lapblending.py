@@ -110,7 +110,7 @@ print "Successfully read in images"
 shape = img1.shape[0], img1.shape[1]
 
 # Test for building a pyramid
-lp_depth = 6   # The depth of the laplacian pyramid
+lp_depth = 8   # The depth of the laplacian pyramid
 print "Building a pyramid for the first image"
 lp1 = pyr_build(img1, lp_depth, show=ifShow)
 print "Building a pyramid for the second image"
