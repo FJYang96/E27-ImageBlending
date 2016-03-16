@@ -125,10 +125,10 @@ if ifShow:
 
 # Creating a mask
 alpha = np.zeros(shape, np.float32)
-
+"""
 # 1. Mask for wendy and burger
 cv2.ellipse(alpha, (512, 384), (150,200), 0, 0, 360, 1, -1)
-
+"""
 # 2. Mask for Bernie and Clinton
 cv2.ellipse(alpha, (175, 150), (52, 82), 0, 0, 360, 1, -1)
 
