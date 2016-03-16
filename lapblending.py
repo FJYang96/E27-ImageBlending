@@ -7,7 +7,7 @@ import cv2
 import numpy as np
 from copy import deepcopy
 
-def pyr_build(orig, depth):
+def pyr_build(orig, depth, show=False):
     """ This function takes in an image and the desired depth to create
     a laplacian pyramid represented in the form of a list"""
     img = deepcopy(orig)
@@ -23,12 +23,15 @@ def pyr_build(orig, depth):
         float_G = resized_G.astype(np.float32)
         l = G[i].astype(np.float32) - float_G
         lp.append(l)
+        if show:
+            cv2.imshow('window',0.5 + 0.5*(l / np.abs(l).max() ))
+            while cv2.waitKey() < 0 : pass
 
     lp.append( G[depth-1].astype(np.float32) )
 
     return lp
 
-def pyr_reconstruct(lp_orig):
+def pyr_reconstruct(lp_orig, show=False):
     """This function takes in a list representing the laplacian pyramid
     of an image and then return the image reconstructed from this pyramid"""
     lp = deepcopy(lp_orig)     # First make a deepcopy of the laplacian pyr
@@ -39,10 +42,9 @@ def pyr_reconstruct(lp_orig):
         R = cv2.pyrUp(R,dstsize=shape)
         R = R.astype(np.float32)
         R += lp.pop()
-        '''
-        cv2.imshow('window',0.5 + 0.5*(R / np.abs(R).max() ))
-        while cv2.waitKey() < 0 : pass
-        '''
+        if show:
+            cv2.imshow('window',0.5 + 0.5*(R / np.abs(R).max() ))
+            while cv2.waitKey() < 0 : pass
 
     # Convert the image into integer format
     R = np.clip(R, 0, 255)
@@ -147,3 +149,17 @@ while cv2.waitKey() < 0 : pass
 l_blend = lap_blend(lp1, lp2, alpha)
 cv2.imshow('window', l_blend)
 while cv2.waitKey() < 0 : pass
+
+"""
+# Build a pyramid for hybrid 
+img3 = cv2.imread('hybrid_result.jpg')
+lp = pyr_build(img3, 6, show=True)
+counter = 0
+for l in lp:
+    filename = 'pyramid' + str(counter) + '.jpg'
+    l = l * 255 / l.max()
+    l = np.clip(l, 0, 255)
+    l = np.uint8(l) 
+    cv2.imwrite(filename,l)
+    counter += 1
+"""
