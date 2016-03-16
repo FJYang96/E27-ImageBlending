@@ -92,8 +92,8 @@ def lap_blend(lpA_orig, lpB_orig, alpha):
 ##### Main program #####
 
 # Get the images
-img1 = cv2.imread('wendy.jpg')
-img2 = cv2.imread('burger.jpg')
+img1 = cv2.imread('clinton.jpg')
+img2 = cv2.imread('bernie.jpg')
 
 # img1 = cv2.imread('einstein.jpg')
 # img2 = cv2.imread('jobs.jpg')
@@ -102,7 +102,7 @@ img2 = cv2.imread('burger.jpg')
 shape = img1.shape[0], img1.shape[1]
 
 # Test for building a pyramid
-lp_depth = 1    # The depth of the laplacian pyramid
+lp_depth = 6   # The depth of the laplacian pyramid
 lp1 = pyr_build(img1, lp_depth)
 
 """
@@ -127,9 +127,14 @@ while cv2.waitKey() < 0 : pass
 
 # Creating a mask
 alpha = np.zeros(shape, np.float32)
+
+# 1. Mask for wendy and burger
 cv2.ellipse(alpha, (512, 384), (150,200), 0, 0, 360, 1, -1)
-# cv2.ellipse(alpha, (150, 200), (100, 150), 0, 0, 360, 1, -1)
-alpha = cv2.GaussianBlur(alpha, (0,0), 5)
+
+# 2. Mask for Bernie and Clinton
+cv2.ellipse(alpha, (175, 150), (52, 82), 0, 0, 360, 1, -1)
+
+# alpha = cv2.GaussianBlur(alpha, (0,0), 5)
 
 # Blending images directly through a alpha blend
 direct_blend = alpha_blend(img1, img2, alpha)
