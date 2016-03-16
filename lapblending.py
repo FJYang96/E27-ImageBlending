@@ -174,8 +174,8 @@ for l in lp:
 """
 
 # Test blending for big chunks of color vs small dots
-img4 = cv2.imread('bluedots.jpg')
-img5 = cv2.imread('orangedots.jpg')
+img4 = cv2.imread('blue.jpg')
+img5 = cv2.imread('orange.jpg')
 shape = img4.shape[1],img4.shape[0]
 alpha = np.empty(shape, 'float32')
 alpha = cv2.rectangle(alpha, (0,0), (shape[1]/2,shape[0]), 1, -1)
@@ -183,5 +183,5 @@ lp4 = pyr_build(img4, 5)
 lp5 = pyr_build(img5, 5)
 l_blend = lap_blend(lp4, lp5, alpha)
 cv2.imshow('color', l_blend)
-cv2.imwrite('dot.jpg', l_blend)
+cv2.imwrite('solid_color.jpg', l_blend)
 while cv2.waitKey() < 0 : pass
