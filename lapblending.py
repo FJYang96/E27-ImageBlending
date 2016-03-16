@@ -24,7 +24,7 @@ def pyr_build(orig, depth, show=False):
         l = G[i].astype(np.float32) - float_G
         lp.append(l)
         if show:
-            cv2.imshow('window',0.5 + 0.5*(l / np.abs(l).max() ))
+            cv2.imshow('Building Pyramid',0.5 + 0.5*(l / np.abs(l).max() ))
             while cv2.waitKey() < 0 : pass
 
     lp.append( G[depth-1].astype(np.float32) )
@@ -43,7 +43,7 @@ def pyr_reconstruct(lp_orig, show=False):
         R = R.astype(np.float32)
         R += lp.pop()
         if show:
-            cv2.imshow('window',0.5 + 0.5*(R / np.abs(R).max() ))
+            cv2.imshow('Reconstructing',0.5 + 0.5*(R / np.abs(R).max() ))
             while cv2.waitKey() < 0 : pass
 
     # Convert the image into integer format
@@ -73,7 +73,7 @@ def alpha_blend(A, B, alpha_orig):
 
     return A + alpha * (B - A)
 
-def lap_blend(lpA_orig, lpB_orig, alpha):
+def lap_blend(lpA_orig, lpB_orig, alpha, show=False):
     """Performs an alpha blend w/ the lapacian pyramid of two images
     returns resulted blended image"""
     lpA = deepcopy(lpA_orig)
@@ -89,43 +89,39 @@ def lap_blend(lpA_orig, lpB_orig, alpha):
         new_lp.append( alpha_blend(A, B, temp_alpha) )
 
     # build the blended image from the new laplacian
-    return pyr_reconstruct(new_lp)
+    return pyr_reconstruct(new_lp, show)
 
 ##### Main program #####
+# Ask user if she wants to see the intermediate results
+print "Hello! This program blends Hilary Clinton and Bernie Sanders... faces"
+print "If you want to see intermediate steps, please enter 'y'."
+ifShow = False
+answer = raw_input()
+if answer == 'y':
+    ifShow = True
 
 # Get the images
+print "Reading in images"
 img1 = cv2.imread('clinton.jpg')
 img2 = cv2.imread('bernie.jpg')
-
-# img1 = cv2.imread('einstein.jpg')
-# img2 = cv2.imread('jobs.jpg')
+print "Successfully read in images"
 
 # Assume 2 images have same shape
 shape = img1.shape[0], img1.shape[1]
 
 # Test for building a pyramid
 lp_depth = 6   # The depth of the laplacian pyramid
-lp1 = pyr_build(img1, lp_depth)
+print "Building a pyramid for the first image"
+lp1 = pyr_build(img1, lp_depth, show=ifShow)
+print "Building a pyramid for the second image"
+lp2 = pyr_build(img2, lp_depth, show=ifShow)
 
-"""
-# This would show the pyramid
-for L in lp1:
-    cv2.imshow('window',0.5 + 0.5*(L / np.abs(L).max() ))
+# Show reconstructing an image from its laplacian
+if ifShow:
+    print "Example for reconstructing from pyramid"
+    R1 = pyr_reconstruct(lp1, show=True)
+    cv2.imshow('Reconstructed',R1)
     while cv2.waitKey() < 0 : pass
-"""
-lp2 = pyr_build(img2, lp_depth)
-
-"""
-for L in lp2:
-    cv2.imshow('window',0.5 + 0.5*(L / np.abs(L).max() ))
-    while cv2.waitKey() < 0 : pass
-"""
-"""
-# Test reconstructing an image from its laplacian
-R1 = pyr_reconstruct(lp1)
-cv2.imshow('window',R1)
-while cv2.waitKey() < 0 : pass
-"""
 
 # Creating a mask
 alpha = np.zeros(shape, np.float32)
@@ -136,18 +132,30 @@ cv2.ellipse(alpha, (512, 384), (150,200), 0, 0, 360, 1, -1)
 # 2. Mask for Bernie and Clinton
 cv2.ellipse(alpha, (175, 150), (52, 82), 0, 0, 360, 1, -1)
 
+# Show the mask
+if ifShow:
+    print "Showing the mask"
+    balpha = alpha.astype(np.uint8).view(np.bool)
+    masked = np.empty((shape[1],shape[0],3), np.uint8)
+    masked[:] = 0
+    masked[balpha] = img2[balpha]
+    cv2.imshow('Mask',masked)
+    while cv2.waitKey() < 0: pass
+    cv2.imwrite('mask.jpg',masked)
+
 # alpha = cv2.GaussianBlur(alpha, (0,0), 5)
 
 # Blending images directly through a alpha blend
 direct_blend = alpha_blend(img1, img2, alpha)
 direct_blend = direct_blend.astype(np.uint8)
-cv2.imshow('window', direct_blend)
+print "The result of direct_blend"
+cv2.imshow('Direct blending', direct_blend)
 while cv2.waitKey() < 0 : pass
-# cv2.imwrite('final.jpg', direct_blend)
 
 # Blending images using laplacian
-l_blend = lap_blend(lp1, lp2, alpha)
-cv2.imshow('window', l_blend)
+print "The result of blending using laplacian"
+l_blend = lap_blend(lp1, lp2, alpha, show=ifShow)
+cv2.imshow('laplacian blending', l_blend)
 while cv2.waitKey() < 0 : pass
 
 """
@@ -163,3 +171,16 @@ for l in lp:
     cv2.imwrite(filename,l)
     counter += 1
 """
+
+# Test blending for big chunks of color vs small dots
+img4 = cv2.imread('bluedots.jpg')
+img5 = cv2.imread('orangedots.jpg')
+shape = img4.shape[1],img4.shape[0]
+alpha = np.empty(shape, 'float32')
+alpha = cv2.rectangle(alpha, (0,0), (shape[1]/2,shape[0]), 1, -1)
+lp4 = pyr_build(img4, 5)
+lp5 = pyr_build(img5, 5)
+l_blend = lap_blend(lp4, lp5, alpha)
+cv2.imshow('color', l_blend)
+cv2.imwrite('solid_color.jpg', l_blend)
+while cv2.waitKey() < 0 : pass
