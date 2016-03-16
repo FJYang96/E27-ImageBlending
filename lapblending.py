@@ -141,7 +141,7 @@ if ifShow:
     masked[balpha] = img2[balpha]
     cv2.imshow('Mask',masked)
     while cv2.waitKey() < 0: pass
-    cv2.imwrite('mask.jpg',alpha)
+    cv2.imwrite('mask.jpg',alpha*255)
 
 # alpha = cv2.GaussianBlur(alpha, (0,0), 5)
 
@@ -156,6 +156,7 @@ while cv2.waitKey() < 0 : pass
 print "The result of blending using laplacian"
 l_blend = lap_blend(lp1, lp2, alpha, show=ifShow)
 cv2.imshow('laplacian blending', l_blend)
+cv2.imwrite('Hillary_Sanders.jpg',l_blend)
 while cv2.waitKey() < 0 : pass
 
 """
